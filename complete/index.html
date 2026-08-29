@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>نظام تقييم استبيانات الجرد</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#050816;
+  --panel:rgba(13,20,34,.76);
+  --line:rgba(148,163,184,.15);
+
+  --text:#f8fafc;
+  --muted:#8fa0b8;
+
+  --blue:#3b82f6;
+  --green:#10b981;
+  --red:#ef4444;
+  --orange:#f97316;
+  --purple:#8b5cf6;
+}
+
+html,
+body{
+  margin:0;
+  min-height:100%;
+
+  font-family:Tahoma,Arial,sans-serif;
+
+  background:
+    radial-gradient(circle at 10% 8%,#2563eb38,transparent 30%),
+    radial-gradient(circle at 90% 15%,#06b6d428,transparent 28%),
+    radial-gradient(circle at 50% 100%,#8b5cf620,transparent 35%),
+    linear-gradient(135deg,#050816,#0a1020 55%,#060b16);
+
+  color:var(--text);
+}
+
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before,
+body::after{
+  content:"";
+
+  position:fixed;
+
+  border-radius:50%;
+
+  filter:blur(90px);
+
+  pointer-events:none;
+
+  z-index:0;
+}
+
+body::before{
+  width:320px;
+  height:320px;
+
+  background:#2563eb;
+
+  top:-140px;
+  right:-100px;
+
+  opacity:.15;
+}
+
+body::after{
+  width:280px;
+  height:280px;
+
+  background:#06b6d4;
+
+  bottom:-130px;
+  left:-90px;
+
+  opacity:.12;
+}
+
+.wrap{
+  width:min(1200px,calc(100% - 36px));
+
+  margin:auto;
+
+  padding:28px 0 40px;
+
+  position:relative;
+  z-index:1;
+}
+
+.header{
+  text-align:center;
+
+  margin-bottom:25px;
+}
+
+.header h1{
+  margin:0;
+
+  font-size:clamp(30px,5vw,48px);
+
+  letter-spacing:-1px;
+}
+
+.title{
+  background:
+    linear-gradient(
+      90deg,
+      #93c5fd,
+      #fff,
+      #67e8f9
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
+
+  -webkit-text-fill-color:transparent;
+}
+
+.header p{
+  color:var(--muted);
+
+  font-size:13px;
+
+  margin:9px 0 0;
+
+  line-height:1.8;
+}
+
+.emoji{
+  font-family:
+    "Segoe UI Emoji",
+    "Apple Color Emoji",
+    "Noto Color Emoji",
+    sans-serif;
+
+  color:initial !important;
+
+  -webkit-text-fill-color:initial !important;
+
+  background:none !important;
+}
+
+.card{
+  position:relative;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(17,27,48,.84),
+      rgba(8,15,29,.70)
+    );
+
+  border:1px solid var(--line);
+
+  border-radius:20px;
+
+  padding:17px;
+
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.045);
+
+  backdrop-filter:blur(18px);
+
+  -webkit-backdrop-filter:blur(18px);
+
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+
+  position:absolute;
+
+  width:190px;
+  height:190px;
+
+  top:-90px;
+  right:-70px;
+
+  border-radius:50%;
+
+  background:#2563eb18;
+
+  filter:blur(35px);
+
+  pointer-events:none;
+}
+
+.section-title{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  margin-bottom:14px;
+
+  position:relative;
+
+  z-index:1;
+}
+
+.section-title strong{
+  font-size:15px;
+}
+
+.section-title span{
+  color:var(--muted);
+
+  font-size:12px;
+}
+
+.top-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:12px;
+
+  margin-bottom:12px;
+}
+
+.input-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:12px;
+}
+
+label{
+  display:block;
+
+  font-weight:800;
+
+  margin-bottom:8px;
+
+  font-size:13px;
+
+  color:#cbd5e1;
+
+  position:relative;
+
+  z-index:1;
+}
+
+textarea,
+input{
+  width:100%;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(3,9,22,.84),
+      rgba(10,18,34,.72)
+    );
+
+  color:#f8fafc;
+
+  border:1px solid rgba(148,163,184,.15);
+
+  border-radius:14px;
+
+  padding:13px;
+
+  outline:none;
+
+  font-family:Consolas,Tahoma,monospace;
+
+  font-size:14px;
+
+  transition:.25s ease;
+
+  position:relative;
+
+  z-index:1;
+}
+
+textarea{
+  min-height:155px;
+
+  resize:vertical;
+
+  line-height:1.8;
+
+  direction:rtl;
+}
+
+input{
+  height:47px;
+}
+
+textarea::placeholder,
+input::placeholder{
+  color:#64748b;
+}
+
+textarea:focus,
+input:focus{
+  border-color:rgba(59,130,246,.65);
+
+  box-shadow:
+    0 0 0 3px rgba(59,130,246,.09),
+    0 15px 40px rgba(0,0,0,.25);
+}
+
+.buttons{
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
+
+  margin-top:9px;
+}
+
+button{
+  border:1px solid rgba(255,255,255,.08);
+
+  border-radius:11px;
+
+  padding:10px 15px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  color:white;
+
+  transition:
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    filter .22s ease,
+    box-shadow .22s ease;
+
+  font-family:Tahoma,Arial,sans-serif;
+
+  position:relative;
+
+  overflow:hidden;
+
+  isolation:isolate;
+}
+
+button:hover{
+  transform:translateY(-2px) scale(1.015);
+
+  filter:brightness(1.1);
+
+  box-shadow:
+    0 0 16px var(--glow),
+    0 0 30px var(--glow),
+    0 10px 32px rgba(0,0,0,.28);
+}
+
+button:active{
+  transform:translateY(0) scale(.97);
+}
+
+button::after{
+  content:"";
+
+  position:absolute;
+
+  width:18px;
+  height:18px;
+
+  left:var(--ripple-x,50%);
+
+  top:var(--ripple-y,50%);
+
+  transform:
+    translate(-50%,-50%)
+    scale(0);
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,.32);
+
+  pointer-events:none;
+
+  z-index:-1;
+}
+
+button.ripple::after{
+  animation:buttonRipple .55s ease-out;
+}
+
+@keyframes buttonRipple{
+
+  0%{
+    transform:
+      translate(-50%,-50%)
+      scale(0);
+
+    opacity:.7;
+  }
+
+  100%{
+    transform:
+      translate(-50%,-50%)
+      scale(16);
+
+    opacity:0;
+  }
+
+}
+
+.paste{
+  --glow:#10b981;
+
+  background:
+    linear-gradient(
+      135deg,
+      #059669,
+      #047857
+    );
+}
+
+.clear{
+  --glow:#ef4444;
+
+  background:
+    rgba(220,38,38,.82);
+}
+
+.copy{
+  --glow:#8b5cf6;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #6d28d9
+    );
+}
+
+.main{
+  --glow:#f97316;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f97316,
+      #ea580c
+    );
+}
+
+.status{
+  margin-top:8px;
+
+  min-height:20px;
+
+  color:#93c5fd;
+
+  font-size:12px;
+
+  line-height:1.7;
+}
+
+.settings{
+  margin-top:12px;
+
+  margin-bottom:12px;
+}
+
+.setting-row{
+  display:grid;
+
+  grid-template-columns:1fr 220px;
+
+  gap:12px;
+
+  align-items:end;
+}
+
+.help{
+  margin-top:8px;
+
+  color:#64748b;
+
+  font-size:11px;
+
+  line-height:1.8;
+}
+
+.stats{
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:10px;
+
+  margin-bottom:12px;
+}
+
+.stat{
+  padding:15px;
+
+  border-radius:15px;
+
+  background:rgba(255,255,255,.035);
+
+  border:1px solid rgba(148,163,184,.10);
+
+  text-align:center;
+}
+
+.stat .number{
+  font-size:23px;
+
+  font-weight:900;
+
+  margin-bottom:4px;
+}
+
+.stat .label{
+  font-size:11px;
+
+  color:#8fa0b8;
+}
+
+.survey-card{
+  margin-top:12px;
+}
+
+.survey-card textarea{
+  min-height:430px;
+}
+
+.result{
+  margin-top:12px;
+}
+
+.result textarea{
+  min-height:550px;
+}
+
+.result-info{
+  margin-top:10px;
+
+  padding:12px 14px;
+
+  border-radius:12px;
+
+  background:rgba(255,255,255,.035);
+
+  border:1px solid rgba(148,163,184,.11);
+
+  color:#94a3b8;
+
+  font-size:12px;
+
+  line-height:2;
+
+  white-space:pre-line;
+}
+
+.note{
+  margin-top:10px;
+
+  padding:11px 13px;
+
+  border-radius:11px;
+
+  background:rgba(255,255,255,.035);
+
+  border:1px solid rgba(148,163,184,.11);
+
+  font-size:12px;
+
+  color:#94a3b8;
+
+  line-height:1.9;
+}
+
+@media(max-width:850px){
+
+  .top-grid,
+  .input-grid{
+    grid-template-columns:1fr;
+  }
+
+  .setting-row{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .wrap{
+    width:min(100% - 24px,620px);
+
+    padding-top:20px;
+  }
+
+  .header h1{
+    font-size:30px;
+  }
+
+  .card{
+    padding:13px;
+
+    border-radius:17px;
+  }
+
+  .buttons{
+    flex-direction:column;
+  }
+
+  button{
+    width:100%;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<header class="header">
+
+  <h1>
+
+    <span class="emoji">📋</span>
+
+    <span class="title">
+      نظام تقييم استبيانات الجرد
+    </span>
+
+  </h1>
+
+  <p>
+    الصق قائمة الاستبيانات كاملة وسيتم جرد جميع الأعضاء تلقائياً
+  </p>
+
+</header>
+
+
+<!-- =====================================================
+     الأعضاء الجدد + خارج الخدمة
+     ===================================================== -->
+
+<div class="top-grid">
+
+
+  <div class="card">
+
+    <div class="section-title">
+
+      <strong>
+        🆕 الأعضاء الجدد
+      </strong>
+
+      <span>
+        التقييم السيء فقط
+      </span>
+
+    </div>
+
+
+    <label>
+      منشنات الأعضاء الجدد
+    </label>
+
+
+    <textarea
+      id="newMembers"
+      placeholder="ضع منشنات الأعضاء الجدد هنا...
+
+مثال:
+<@123456789>
+<@987654321>"
+    ></textarea>
+
+
+    <div class="buttons">
+
+      <button
+        class="paste"
+        onclick="pasteInto('newMembers','statusNew')"
+      >
+        <span class="emoji">📋</span>
+        لصق
+      </button>
+
+
+      <button
+        class="clear"
+        onclick="clearOne('newMembers')"
+      >
+        مسح
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusNew"
+      class="status"
+    ></div>
+
+  </div>
+
+
+
+  <div class="card">
+
+    <div class="section-title">
+
+      <strong>
+        ⛔ الأعضاء خارج الخدمة الإدراية
+      </strong>
+
+      <span>
+        خارج الخدمة
+      </span>
+
+    </div>
+
+
+    <label>
+      منشنات الأعضاء خارج الخدمة الإدراية
+    </label>
+
+
+    <textarea
+      id="outOfService"
+      placeholder="ضع منشنات الأعضاء خارج الخدمة هنا..."
+    ></textarea>
+
+
+    <div class="buttons">
+
+      <button
+        class="paste"
+        onclick="pasteInto('outOfService','statusOut')"
+      >
+        <span class="emoji">📋</span>
+        لصق
+      </button>
+
+
+      <button
+        class="clear"
+        onclick="clearOne('outOfService')"
+      >
+        مسح
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusOut"
+      class="status"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     الحاضرين + مشرف المسؤوليات
+     ===================================================== -->
+
+<div class="input-grid">
+
+
+  <div class="card">
+
+    <div class="section-title">
+
+      <strong>
+        👥 الحاضرين في الجرد
+      </strong>
+
+      <span>
+        +2 مقابلات
+      </span>
+
+    </div>
+
+
+    <label>
+      مسؤولين الجرد الحاضرين
+    </label>
+
+
+    <textarea
+      id="inventoryAttendees"
+      placeholder="ضع منشنات الحاضرين في الجرد هنا...
+
+كل شخص موجود هنا يحصل على مقابلتين إضافيتين."
+    ></textarea>
+
+
+    <div class="buttons">
+
+      <button
+        class="paste"
+        onclick="pasteInto('inventoryAttendees','statusAttendees')"
+      >
+        <span class="emoji">📋</span>
+        لصق
+      </button>
+
+
+      <button
+        class="clear"
+        onclick="clearOne('inventoryAttendees')"
+      >
+        مسح
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusAttendees"
+      class="status"
+    ></div>
+
+  </div>
+
+
+
+  <div class="card">
+
+    <div class="section-title">
+
+      <strong>
+        🛡️ مشرف المسؤوليات
+      </strong>
+
+      <span>
+        زيادة أو خصم المقابلات
+      </span>
+
+    </div>
+
+
+    <label>
+      منشنات مشرفي المسؤوليات
+    </label>
+
+
+    <textarea
+      id="responsibilitySupervisors"
+      placeholder="ضع منشنات مشرفي المسؤوليات هنا..."
+    ></textarea>
+
+
+    <div class="buttons">
+
+      <button
+        class="paste"
+        onclick="pasteInto('responsibilitySupervisors','statusSupervisors')"
+      >
+        <span class="emoji">📋</span>
+        لصق
+      </button>
+
+
+      <button
+        class="clear"
+        onclick="clearOne('responsibilitySupervisors')"
+      >
+        مسح
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusSupervisors"
+      class="status"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     الزيادة والخصم
+     ===================================================== -->
+
+<div class="card settings">
+
+  <div class="section-title">
+
+    <strong>
+      ⚙️ زيادة / خصم مقابلات من مشرف المسؤوليات
+    </strong>
+
+    <span>
+      تحكم يدوي
+    </span>
+
+  </div>
+
+
+  <div class="setting-row">
+
+    <div>
+
+      <label>
+        عدد المقابلات
+      </label>
+
+      <div class="help">
+
+        اكتب رقم موجب للزيادة، ورقم سالب للخصم.
+
+        <br>
+
+        مثال: <strong>3</strong> = إضافة 3 مقابلات.
+
+        <br>
+
+        مثال: <strong>-3</strong> = خصم 3 مقابلات.
+
+        <br>
+
+        يتم تطبيق الزيادة أو الخصم فقط على الشخص الموجود في قائمة مشرف المسؤوليات.
+
+      </div>
+
+    </div>
+
+
+    <input
+      id="supervisorDeduction"
+      type="number"
+      step="1"
+      value="0"
+      placeholder="مثال: 3 أو -3"
+    >
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     الإحصائيات
+     ===================================================== -->
+
+<div class="stats">
+
+
+  <div class="stat">
+
+    <div
+      class="number"
+      id="statMembers"
+    >
+      0
+    </div>
+
+    <div class="label">
+      عدد الأعضاء
+    </div>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div
+      class="number"
+      id="statInterviews"
+    >
+      0
+    </div>
+
+    <div class="label">
+      إجمالي المقابلات
+    </div>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div
+      class="number"
+      id="statGood"
+    >
+      0
+    </div>
+
+    <div class="label">
+      جيد فأعلى
+    </div>
+
+  </div>
+
+
+  <div class="stat">
+
+    <div
+      class="number"
+      id="statBad"
+    >
+      0
+    </div>
+
+    <div class="label">
+      سيء
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     الاستبيان الكامل
+     ===================================================== -->
+
+<div class="card survey-card">
+
+
+  <div class="section-title">
+
+    <strong>
+      📝 قائمة استبيانات الجرد
+    </strong>
+
+    <span>
+      الصق القائمة كاملة هنا
+    </span>
+
+  </div>
+
+
+  <label>
+    استبيانات الأعضاء
+  </label>
+
+
+  <textarea
+    id="surveyList"
+    placeholder="الصق القائمة كاملة هنا...
+
+منشن الشخص : <@123456789>
+الايدي : -556
+القبول : 0
+مرفوض : 0
+الساعات : 0
+توظيف ميداني : 0
+التقييم : تقييم من عند المسؤول
+تقييم المسؤوليات : تقييم من عند المسؤول
+التقيم النهائي : تقييم من عند المسؤول
+=====================
+منشن الشخص : <@123456789>
+الايدي : -556
+القبول : 44
+مرفوض : 6
+الساعات : 16
+توظيف ميداني : 0
+التقييم : تقييم من عند المسؤول
+تقييم المسؤوليات : تقييم من عند المسؤول
+التقيم النهائي : تقييم من عند المسؤول
+=====================
+وهكذا..."
+  ></textarea>
+
+
+  <div class="buttons">
+
+
+    <button
+      class="paste"
+      onclick="pasteMainSurvey()"
+    >
+      <span class="emoji">📋</span>
+      لصق القائمة
+    </button>
+
+
+    <button
+      class="main"
+      onclick="completeSurvey()"
+    >
+      <span class="emoji">✅</span>
+      تجريد القائمة كاملة
+    </button>
+
+
+    <button
+      class="clear"
+      onclick="clearOne('surveyList')"
+    >
+      مسح
+    </button>
+
+  </div>
+
+
+  <div
+    id="surveyStatus"
+    class="status"
+  ></div>
+
+</div>
+
+
+<!-- =====================================================
+     النتيجة
+     ===================================================== -->
+
+<div class="card result">
+
+
+  <div class="section-title">
+
+    <strong>
+      📊 النتيجة النهائية
+    </strong>
+
+    <span>
+      جميع الأعضاء
+    </span>
+
+  </div>
+
+
+  <textarea
+    id="output"
+    readonly
+    placeholder="ستظهر هنا نتيجة جميع أعضاء القائمة..."
+  ></textarea>
+
+
+  <div class="buttons">
+
+
+    <button
+      class="copy"
+      onclick="copyResult()"
+    >
+      <span class="emoji">📄</span>
+      نسخ النتيجة
+    </button>
+
+
+    <button
+      class="clear"
+      onclick="clearAll()"
+    >
+      <span class="emoji">🗑️</span>
+      مسح الكل
+    </button>
+
+  </div>
+
+
+  <div
+    id="resultInfo"
+    class="result-info"
+  >
+    لم يتم تجريد أي قائمة حتى الآن.
+  </div>
+
+
+  <div
+    id="statusMain"
+    class="status"
+  ></div>
+
+
+  <div class="note">
+
+    <strong>نظام التقييم:</strong>
+
+    أقل من 5 = سيء.
+
+    <br>
+
+    5 إلى 14 = جيد جداً.
+
+    <br>
+
+    15 إلى 19 = ممتاز.
+
+    <br>
+
+    20 فأكثر = ممتاز جداً.
+
+    <br><br>
+
+    <strong>المقابلات:</strong>
+
+    إجمالي المقابلات يبدأ من مجموع القبول والرفض،
+    ثم تضاف مقابلات الساعات،
+    ثم مقابلات التوظيف الميداني،
+    ثم +2 للحاضرين في الجرد،
+    ثم تتم إضافة أو خصم قيمة مشرف المسؤوليات إن كان العضو موجوداً في قائمته.
+
+    <br><br>
+
+    <strong>الساعات:</strong>
+
+    كل 10 ساعات = مقابلة إضافية،
+    وإذا تجاوزت الساعات الحد التالي بأكثر من 5 ساعات تُحسب المقابلة التالية.
+
+  </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   اللصق
+   ========================================================= */
+
+async function pasteInto(id,statusId){
+
+  const box=
+    document.getElementById(id);
+
+  const status=
+    document.getElementById(statusId);
+
+
+  try{
+
+    const text=
+      await navigator.clipboard.readText();
+
+
+    if(!text){
+
+      status.textContent=
+        '⚠️ الحافظة فارغة.';
+
+      return;
+
+    }
+
+
+    box.value=text;
+
+
+    status.textContent=
+      '✅ تم اللصق بنجاح.';
+
+
+  }catch(e){
+
+    box.focus();
+
+    status.textContent=
+      '⚠️ اضغط Ctrl + V للصق النص.';
+
+  }
+
+}
+
+
+/* =========================================================
+   لصق القائمة الرئيسية
+   ========================================================= */
+
+async function pasteMainSurvey(){
+
+  const box=
+    document.getElementById(
+      'surveyList'
+    );
+
+  const status=
+    document.getElementById(
+      'surveyStatus'
+    );
+
+
+  try{
+
+    const text=
+      await navigator.clipboard.readText();
+
+
+    if(!text){
+
+      status.textContent=
+        '⚠️ الحافظة فارغة.';
+
+      return;
+
+    }
+
+
+    box.value=text;
+
+
+    status.textContent=
+      '✅ تم لصق القائمة كاملة.';
+
+
+  }catch(e){
+
+    box.focus();
+
+    status.textContent=
+      '⚠️ اضغط Ctrl + V للصق القائمة.';
+
+  }
+
+}
+
+
+/* =========================================================
+   تحويل الأرقام العربية
+   ========================================================= */
+
+function arabicToEnglish(value){
+
+  return String(value ?? '')
+    .replace(
+      /[٠-٩]/g,
+      d =>
+        String(
+          '٠١٢٣٤٥٦٧٨٩'.indexOf(d)
+        )
+    );
+
+}
+
+
+/* =========================================================
+   استخراج الرقم
+   ========================================================= */
+
+function num(value){
+
+  const normalized=
+    arabicToEnglish(value);
+
+
+  const match=
+    normalized.match(
+      /-?\d+(?:[.,]\d+)?/
+    );
+
+
+  return match
+    ? parseFloat(
+        match[0].replace(',','.')
+      )
+    : 0;
+
+}
+
+
+/* =========================================================
+   تطبيع النص
+   ========================================================= */
+
+function normalize(text){
+
+  return arabicToEnglish(text)
+    .replace(/\uFE0F/g,'')
+    .replace(/أ|إ|آ/g,'ا')
+    .replace(/ة/g,'ه')
+    .replace(/\s+/g,' ')
+    .trim();
+
+}
+
+
+/* =========================================================
+   استخراج قيمة حقل
+   ========================================================= */
+
+function getField(text,label){
+
+  const lines=
+    String(text || '')
+      .split(/\r?\n/);
+
+
+  const target=
+    normalize(label);
+
+
+  for(const line of lines){
+
+    const normalized=
+      normalize(line);
+
+
+    if(
+      normalized.startsWith(
+        target
+      )
+    ){
+
+      const colon=
+        line.indexOf(':');
+
+
+      if(colon>=0){
+
+        return line
+          .slice(colon+1)
+          .trim();
+
+      }
+
+    }
+
+  }
+
+
+  return '';
+
+}
+
+
+/* =========================================================
+   استخراج ID من المنشن
+   ========================================================= */
+
+function getMemberId(text){
+
+  if(!text)
+    return '';
+
+
+  const match=
+    String(text).match(
+      /<@!?(\d+)>/
+    );
+
+
+  return match
+    ? match[1]
+    : '';
+
+}
+
+
+/* =========================================================
+   استخراج IDs من قائمة
+   ========================================================= */
+
+function getMentionIds(text){
+
+  if(!text)
+    return [];
+
+
+  const matches=
+    String(text).match(
+      /<@!?(\d+)>/g
+    );
+
+
+  if(!matches)
+    return [];
+
+
+  return matches
+    .map(
+      mention=>{
+
+        const match=
+          mention.match(
+            /<@!?(\d+)>/
+          );
+
+
+        return match
+          ? match[1]
+          : '';
+
+      }
+    )
+    .filter(Boolean);
+
+}
+
+
+/* =========================================================
+   ID العضو
+   ========================================================= */
+
+function getIdFromSurvey(text){
+
+  const mentionId=
+    getMemberId(text);
+
+
+  if(mentionId)
+    return mentionId;
+
+
+  const id=
+    getField(
+      text,
+      'الايدي'
+    );
+
+
+  const match=
+    String(id)
+      .match(
+        /\d{2,}/
+      );
+
+
+  return match
+    ? match[0]
+    : '';
+
+}
+
+
+/* =========================================================
+   القبول + الرفض
+   ========================================================= */
+
+function getAcceptanceTotal(text){
+
+  const accepted=
+    num(
+      getField(
+        text,
+        'القبول'
+      )
+    );
+
+
+  const rejected=
+    num(
+      getField(
+        text,
+        'مرفوض'
+      )
+    );
+
+
+  return accepted+rejected;
+
+}
+
+
+/* =========================================================
+   التقييم
+   ========================================================= */
+
+function calculateRating(total){
+
+  if(total<5)
+    return 'سيء';
+
+
+  if(total<=14)
+    return 'جيد جداً';
+
+
+  if(total<=19)
+    return 'ممتاز';
+
+
+  return 'ممتاز جداً';
+
+}
+
+
+/* =========================================================
+   التقييم النهائي حسب قائمة الجديد
+   ========================================================= */
+
+function getFinalRating(
+  text,
+  rating
+){
+
+  const memberId=
+    getIdFromSurvey(text);
+
+
+  if(!memberId)
+    return rating;
+
+
+  const newMembers=
+    document
+      .getElementById(
+        'newMembers'
+      )
+      .value;
+
+
+  const outOfService=
+    document
+      .getElementById(
+        'outOfService'
+      )
+      .value;
+
+
+  const newIds=
+    getMentionIds(
+      newMembers
+    );
+
+
+  const outIds=
+    getMentionIds(
+      outOfService
+    );
+
+
+  /*
+     خارج الخدمة الإدراية
+  */
+
+  if(
+    outIds.includes(memberId)
+  ){
+
+    return '<@&1480638365937434808>';
+
+  }
+
+
+  /*
+     الأعضاء الجدد:
+
+     إذا كان سيء يبقى جديد.
+
+     إذا كان:
+     جيد جداً
+     ممتاز
+     ممتاز جداً
+
+     لا يعتبر جديداً.
+  */
+
+  if(
+    newIds.includes(memberId)
+  ){
+
+    if(
+      rating==='سيء'
+    ){
+
+      return 'جديد';
+
+    }
+
+
+    return rating;
+
+  }
+
+
+  return rating;
+
+}
+
+
+/* =========================================================
+   مقابلات التوظيف الميداني
+   ========================================================= */
+
+function getFieldInterviews(text){
+
+  const fieldWork=
+    num(
+      getField(
+        text,
+        'توظيف ميداني'
+      )
+    );
+
+
+  return Math.floor(
+    fieldWork/3
+  );
+
+}
+
+
+/* =========================================================
+   مقابلات الساعات
+   ========================================================= */
+
+function getHourInterviews(text){
+
+  const hours=
+    num(
+      getField(
+        text,
+        'الساعات'
+      )
+    );
+
+
+  /*
+     كل 10 ساعات = مقابلة.
+
+     10 - 15 = 1
+     16 - 25 = 2
+     26 - 35 = 3
+     36 - 45 = 4
+
+     أي أن الزيادة لا تُحسب إلا
+     عندما تتجاوز الـ5 ساعات بعد
+     آخر مجموعة من 10.
+  */
+
+  if(hours<10)
+    return 0;
+
+
+  const base=
+    Math.floor(
+      hours/10
+    );
+
+
+  const remainder=
+    hours%10;
+
+
+  if(remainder>5){
+
+    return base+1;
+
+  }
+
+
+  return base;
+
+}
+
+
+/* =========================================================
+   هل العضو حاضر في الجرد؟
+   ========================================================= */
+
+function isInventoryAttendee(memberId){
+
+  if(!memberId)
+    return false;
+
+
+  const list=
+    document
+      .getElementById(
+        'inventoryAttendees'
+      )
+      .value;
+
+
+  return getMentionIds(
+    list
+  ).includes(memberId);
+
+}
+
+
+/* =========================================================
+   هل العضو مشرف مسؤوليات؟
+   ========================================================= */
+
+function isResponsibilitySupervisor(memberId){
+
+  if(!memberId)
+    return false;
+
+
+  const list=
+    document
+      .getElementById(
+        'responsibilitySupervisors'
+      )
+      .value;
+
+
+  return getMentionIds(
+    list
+  ).includes(memberId);
+
+}
+
+
+/* =========================================================
+   الزيادة / الخصم
+   ========================================================= */
+
+function getSupervisorAdjustment(){
+
+  return num(
+    document
+      .getElementById(
+        'supervisorDeduction'
+      )
+      .value
+  );
+
+}
+
+
+/* =========================================================
+   حساب إجمالي المقابلات
+   ========================================================= */
+
+function calculateInterviews(text){
+
+  const memberId=
+    getIdFromSurvey(text);
+
+
+  /*
+     الأساس:
+
+     القبول + الرفض
+  */
+
+  const acceptanceTotal=
+    getAcceptanceTotal(text);
+
+
+  /*
+     مقابلات التوظيف الميداني
+  */
+
+  const fieldInterviews=
+    getFieldInterviews(text);
+
+
+  /*
+     مقابلات الساعات
+  */
+
+  const hourInterviews=
+    getHourInterviews(text);
+
+
+  /*
+     الزيادة للحاضرين في الجرد
+
+     +2
+  */
+
+  const attendeeBonus=
+    isInventoryAttendee(memberId)
+      ? 2
+      : 0;
+
+
+  /*
+     زيادة أو خصم مشرف المسؤوليات
+  */
+
+  const supervisorAdjustment=
+    isResponsibilitySupervisor(memberId)
+      ? getSupervisorAdjustment()
+      : 0;
+
+
+  /*
+     إجمالي المقابلات:
+
+     القبول + الرفض
+     +
+     الساعات
+     +
+     التوظيف الميداني
+     +
+     الحضور في الجرد
+     +
+     زيادة/خصم مشرف المسؤوليات
+  */
+
+  const total=
+    acceptanceTotal+
+    hourInterviews+
+    fieldInterviews+
+    attendeeBonus+
+    supervisorAdjustment;
+
+
+  return Math.max(
+    0,
+    total
+  );
+
+}
+
+
+/* =========================================================
+   استبدال الحقل
+   ========================================================= */
+
+function replaceField(
+  text,
+  label,
+  value
+){
+
+  const lines=
+    String(text)
+      .split(/\r?\n/);
+
+
+  const target=
+    normalize(label);
+
+
+  for(let i=0;i<lines.length;i++){
+
+    const normalized=
+      normalize(lines[i]);
+
+
+    if(
+      normalized.startsWith(
+        target
+      )
+    ){
+
+      const colon=
+        lines[i].indexOf(':');
+
+
+      if(colon>=0){
+
+        lines[i]=
+          lines[i]
+            .slice(0,colon+1)+
+          ' '+
+          value;
+
+        return lines.join('\n');
+
+      }
+
+    }
+
+  }
+
+
+  return text;
+
+}
+
+
+/* =========================================================
+   استبدال مجموعة حقول
+   ========================================================= */
+
+function replaceAny(
+  text,
+  labels,
+  value
+){
+
+  for(
+    const label
+    of labels
+  ){
+
+    const before=
+      text;
+
+
+    text=
+      replaceField(
+        text,
+        label,
+        value
+      );
+
+
+    if(
+      text!==before
+    ){
+
+      return text;
+
+    }
+
+  }
+
+
+  return text;
+
+}
+
+
+/* =========================================================
+   تجريد عضو واحد
+   ========================================================= */
+
+function calculateSurvey(text){
+
+  if(!text.trim())
+    return null;
+
+
+  const memberId=
+    getIdFromSurvey(text);
+
+
+  const acceptanceTotal=
+    getAcceptanceTotal(text);
+
+
+  const rating=
+    calculateRating(
+      acceptanceTotal
+    );
+
+
+  const finalRating=
+    getFinalRating(
+      text,
+      rating
+    );
+
+
+  const hours=
+    num(
+      getField(
+        text,
+        'الساعات'
+      )
+    );
+
+
+  const hourInterviews=
+    getHourInterviews(text);
+
+
+  const fieldWork=
+    num(
+      getField(
+        text,
+        'توظيف ميداني'
+      )
+    );
+
+
+  const fieldInterviews=
+    getFieldInterviews(text);
+
+
+  const attendeeBonus=
+    isInventoryAttendee(
+      memberId
+    )
+      ? 2
+      : 0;
+
+
+  const isSupervisor=
+    isResponsibilitySupervisor(
+      memberId
+    );
+
+
+  const supervisorAdjustment=
+    isSupervisor
+      ? getSupervisorAdjustment()
+      : 0;
+
+
+  /*
+     إجمالي المقابلات
+
+     القبول + الرفض
+     +
+     مقابلات الساعات
+     +
+     مقابلات التوظيف الميداني
+     +
+     مقابلات الحضور
+     +
+     زيادة / خصم المشرف
+  */
+
+  const totalInterviews=
+    Math.max(
+      0,
+      acceptanceTotal+
+      hourInterviews+
+      fieldInterviews+
+      attendeeBonus+
+      supervisorAdjustment
+    );
+
+
+  /*
+     تجهيز النتيجة
+
+     مهم:
+     لا يتم تعديل حقل الايدي.
+     يبقى كما تم إدخاله في الاستبيان.
+  */
+
+  let output=
+    text;
+
+
+  /*
+     التقييم
+  */
+
+  output=
+    replaceAny(
+      output,
+      [
+        'التقييم'
+      ],
+      rating
+    );
+
+
+  /*
+     تقييم المسؤوليات
+
+     لا يتم تعديله نهائياً.
+  */
+
+
+  /*
+     التقييم النهائي
+  */
+
+  output=
+    replaceAny(
+      output,
+      [
+        'التقيم النهائي',
+        'التقييم النهائي'
+      ],
+      finalRating
+    );
+
+
+  /*
+     تجهيز نص الزيادة / الخصم
+  */
+
+  const adjustmentText=
+    supervisorAdjustment>0
+      ? '+ '+
+        supervisorAdjustment
+      : supervisorAdjustment<0
+        ? '- '+
+          Math.abs(
+            supervisorAdjustment
+          )
+        : '0';
+
+
+  return {
+
+    output,
+
+    info:{
+
+      memberId,
+
+      acceptanceTotal,
+
+      rating,
+
+      finalRating,
+
+      hours,
+
+      hourInterviews,
+
+      fieldWork,
+
+      fieldInterviews,
+
+      attendeeBonus,
+
+      supervisorAdjustment,
+
+      totalInterviews,
+
+      adjustmentText
+
+    }
+
+  };
+
+}
+
+
+/* =========================================================
+   تقسيم القائمة إلى أعضاء
+   ========================================================= */
+
+function splitSurveyList(text){
+
+  if(!text.trim())
+    return [];
+
+
+  const blocks=
+    text
+      .split(
+        /\r?\n\s*={5,}\s*\r?\n/g
+      );
+
+
+  return blocks
+    .map(
+      block=>block.trim()
+    )
+    .filter(
+      block=>
+        block &&
+        (
+          /منشن\s*الشخص/i.test(
+            normalize(block)
+          )
+          ||
+          /القبول\s*:/i.test(
+            normalize(block)
+          )
+        )
+    );
+
+}
+
+
+/* =========================================================
+   سبب مختصر
+   ========================================================= */
+
+function buildReason(info,index){
+
+  const adjustment=
+    info.supervisorAdjustment;
+
+
+  const adjustmentText=
+    adjustment>0
+      ? '+ '+
+        adjustment
+      : adjustment<0
+        ? '- '+
+          Math.abs(
+            adjustment
+          )
+        : '0';
+
+
+  return (
+    '👤 العضو '+
+    (index+1)+
+    '\n'+
+
+    'ID: '+
+    (info.memberId || 'غير موجود')+
+    '\n'+
+
+    'القبول + الرفض: '+
+    info.acceptanceTotal+
+    '\n'+
+
+    'التقييم: '+
+    info.rating+
+    '\n'+
+
+    'الساعات: '+
+    info.hours+
+    '\n'+
+
+    'مقابلات الساعات: '+
+    info.hourInterviews+
+    '\n'+
+
+    'مقابلات التوظيف الميداني: '+
+    info.fieldInterviews+
+    '\n'+
+
+    'مقابلات الحضور في الجرد: +'+
+    info.attendeeBonus+
+    '\n'+
+
+    'زيادة / خصم مشرف المسؤوليات: '+
+    adjustmentText+
+    '\n'+
+
+    'إجمالي المقابلات: '+
+    info.acceptanceTotal+
+    ' + '+
+    info.hourInterviews+
+    ' + '+
+    info.fieldInterviews+
+    ' + '+
+    info.attendeeBonus+
+    ' + '+
+    adjustment+
+    ' = '+
+    info.totalInterviews
+  );
+
+}
+
+
+/* =========================================================
+   تجريد القائمة كاملة
+   ========================================================= */
+
+function completeSurvey(){
+
+  const list=
+    document
+      .getElementById(
+        'surveyList'
+      )
+      .value;
+
+
+  const status=
+    document
+      .getElementById(
+        'surveyStatus'
+      );
+
+
+  if(!list.trim()){
+
+    status.textContent=
+      '⚠️ الصق قائمة الاستبيانات أولاً.';
+
+    return;
+
+  }
+
+
+  /*
+     تقسيم القائمة إلى جميع الأعضاء
+  */
+
+  const blocks=
+    splitSurveyList(list);
+
+
+  if(!blocks.length){
+
+    status.textContent=
+      '⚠️ لم يتم العثور على استبيانات داخل القائمة. تأكد من وجود ===================== بين الأعضاء.';
+
+    return;
+
+  }
+
+
+  const results=[];
+
+  const infos=[];
+
+
+  let totalInterviews=0;
+
+  let goodCount=0;
+
+  let badCount=0;
+
+
+  /*
+     جرد كل عضو
+  */
+
+  blocks.forEach(
+    (block,index)=>{
+
+      const result=
+        calculateSurvey(
+          block
+        );
+
+
+      if(!result)
+        return;
+
+
+      /*
+         النتيجة فقط
+
+         بدون السبب
+      */
+
+      results.push(
+        result.output
+      );
+
+
+      /*
+         السبب منفصل
+      */
+
+      infos.push(
+        buildReason(
+          result.info,
+          index
+        )
+      );
+
+
+      totalInterviews+=
+        result.info.totalInterviews;
+
+
+      if(
+        result.info.rating==='سيء'
+      ){
+
+        badCount++;
+
+      }else{
+
+        goodCount++;
+
+      }
+
+    }
+  );
+
+
+  if(!results.length){
+
+    status.textContent=
+      '⚠️ لم يتم استخراج أي عضو.';
+
+    return;
+
+  }
+
+
+  /*
+     النتيجة النهائية
+
+     لا تحتوي على الأسباب
+  */
+
+  document
+    .getElementById(
+      'output'
+    )
+    .value=
+      results.join(
+        '\n\n=====================\n\n'
+      );
+
+
+  /*
+     الأسباب تظهر هنا فقط
+  */
+
+  document
+    .getElementById(
+      'resultInfo'
+    )
+    .textContent=
+      infos.join(
+        '\n\n--------------------\n\n'
+      );
+
+
+  /*
+     الإحصائيات
+  */
+
+  document
+    .getElementById(
+      'statMembers'
+    )
+    .textContent=
+      results.length;
+
+
+  document
+    .getElementById(
+      'statInterviews'
+    )
+    .textContent=
+      totalInterviews;
+
+
+  document
+    .getElementById(
+      'statGood'
+    )
+    .textContent=
+      goodCount;
+
+
+  document
+    .getElementById(
+      'statBad'
+    )
+    .textContent=
+      badCount;
+
+
+  status.textContent=
+    '✅ تم جرد القائمة كاملة بنجاح — تم تجريد '+
+    results.length+
+    ' أعضاء.';
+
+
+  document
+    .getElementById(
+      'statusMain'
+    )
+    .textContent=
+      '✅ تمت معالجة جميع أعضاء القائمة.';
+
+}
+
+
+/* =========================================================
+   نسخ النتيجة فقط
+   ========================================================= */
+
+async function copyResult(){
+
+  const output=
+    document
+      .getElementById(
+        'output'
+      );
+
+
+  /*
+     نأخذ فقط قيمة حقل النتيجة.
+
+     الأسباب موجودة في resultInfo
+     ولن تدخل نهائياً في النسخ.
+  */
+
+  const text=
+    output.value;
+
+
+  if(!text){
+
+    document
+      .getElementById(
+        'statusMain'
+      )
+      .textContent=
+        '⚠️ لا توجد نتيجة لنسخها.';
+
+    return;
+
+  }
+
+
+  try{
+
+    await navigator.clipboard.writeText(
+      text
+    );
+
+
+    document
+      .getElementById(
+        'statusMain'
+      )
+      .textContent=
+        '✅ تم نسخ النتيجة فقط بدون الأسباب.';
+
+  }catch(e){
+
+    output.focus();
+
+    output.select();
+
+    document.execCommand(
+      'copy'
+    );
+
+
+    document
+      .getElementById(
+        'statusMain'
+      )
+      .textContent=
+        '✅ تم نسخ النتيجة فقط.';
+
+  }
+
+}
+
+
+/* =========================================================
+   مسح حقل
+   ========================================================= */
+
+function clearOne(id){
+
+  document
+    .getElementById(id)
+    .value='';
+
+}
+
+
+/* =========================================================
+   مسح الكل
+   ========================================================= */
+
+function clearAll(){
+
+  document
+    .getElementById(
+      'newMembers'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'outOfService'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'inventoryAttendees'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'responsibilitySupervisors'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'supervisorDeduction'
+    )
+    .value='0';
+
+
+  document
+    .getElementById(
+      'surveyList'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'output'
+    )
+    .value='';
+
+
+  document
+    .getElementById(
+      'resultInfo'
+    )
+    .textContent=
+      'لم يتم تجريد أي قائمة حتى الآن.';
+
+
+  document
+    .getElementById(
+      'statusMain'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'surveyStatus'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'statusNew'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'statusOut'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'statusAttendees'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'statusSupervisors'
+    )
+    .textContent='';
+
+
+  document
+    .getElementById(
+      'statMembers'
+    )
+    .textContent='0';
+
+
+  document
+    .getElementById(
+      'statInterviews'
+    )
+    .textContent='0';
+
+
+  document
+    .getElementById(
+      'statGood'
+    )
+    .textContent='0';
+
+
+  document
+    .getElementById(
+      'statBad'
+    )
+    .textContent='0';
+
+}
+
+
+/* =========================================================
+   تأثير النقر
+   ========================================================= */
+
+document.addEventListener(
+  'click',
+  function(e){
+
+    const button=
+      e.target.closest(
+        'button'
+      );
+
+
+    if(!button)
+      return;
+
+
+    const rect=
+      button.getBoundingClientRect();
+
+
+    button.style.setProperty(
+      '--ripple-x',
+      (
+        e.clientX-
+        rect.left
+      )+'px'
+    );
+
+
+    button.style.setProperty(
+      '--ripple-y',
+      (
+        e.clientY-
+        rect.top
+      )+'px'
+    );
+
+
+    button.classList.remove(
+      'ripple'
+    );
+
+
+    void button.offsetWidth;
+
+
+    button.classList.add(
+      'ripple'
+    );
+
+
+    setTimeout(
+      ()=>{
+        button.classList.remove(
+          'ripple'
+        );
+      },
+      600
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>
