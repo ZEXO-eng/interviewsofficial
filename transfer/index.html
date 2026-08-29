@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>نظام جرد تقارير قسم الانترفيو</title>
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+    }
+
+    :root{
+      --bg:#050816;
+      --panel:rgba(15,23,42,.34);
+      --panel2:rgba(15,23,42,.24);
+      --line:rgba(255,255,255,.12);
+
+      --text:#f8fafc;
+      --muted:#8fa0b8;
+
+      --blue:#3b82f6;
+      --green:#10b981;
+      --red:#ef4444;
+      --orange:#f97316;
+      --purple:#8b5cf6;
+    }
+
+    html,
+    body{
+      margin:0;
+      min-height:100%;
+
+      font-family:Tahoma,Arial,sans-serif;
+
+      background:
+        radial-gradient(circle at 10% 8%,rgba(37,99,235,.28),transparent 30%),
+        radial-gradient(circle at 90% 15%,rgba(6,182,212,.22),transparent 28%),
+        radial-gradient(circle at 50% 100%,rgba(139,92,246,.18),transparent 35%),
+        linear-gradient(135deg,#030712,#08101f 55%,#020617);
+
+      color:var(--text);
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    body::before,
+    body::after{
+      content:"";
+
+      position:fixed;
+
+      border-radius:50%;
+
+      filter:blur(100px);
+
+      pointer-events:none;
+
+      z-index:0;
+    }
+
+    body::before{
+      width:360px;
+      height:360px;
+
+      background:#2563eb;
+
+      top:-150px;
+      right:-110px;
+
+      opacity:.18;
+    }
+
+    body::after{
+      width:320px;
+      height:320px;
+
+      background:#06b6d4;
+
+      bottom:-150px;
+      left:-100px;
+
+      opacity:.14;
+    }
+
+    .wrapper{
+      width:min(1200px,calc(100% - 36px));
+
+      margin:auto;
+
+      padding:28px 0 40px;
+
+      position:relative;
+      z-index:1;
+    }
+
+    /* =========================
+       TOP BAR
+    ========================= */
+
+    .topbar{
+      display:flex;
+
+      justify-content:space-between;
+
+      align-items:center;
+
+      gap:20px;
+
+      margin-bottom:25px;
+    }
+
+    .brand{
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+    }
+
+    .brand-icon{
+      width:44px;
+      height:44px;
+
+      border:1px solid rgba(255,255,255,.14);
+
+      border-radius:14px;
+
+      display:grid;
+
+      place-items:center;
+
+      background:rgba(255,255,255,.055);
+
+      box-shadow:
+        0 10px 35px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.10);
+
+      backdrop-filter:blur(18px);
+
+      -webkit-backdrop-filter:blur(18px);
+
+      font-size:22px;
+
+      font-family:
+        "Segoe UI Emoji",
+        "Apple Color Emoji",
+        "Noto Color Emoji",
+        sans-serif;
+    }
+
+    .brand b{
+      font-size:15px;
+    }
+
+    .brand span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:12px;
+
+      margin-top:4px;
+    }
+
+    .badge{
+      padding:8px 12px;
+
+      border:1px solid rgba(255,255,255,.12);
+
+      border-radius:999px;
+
+      color:#cbd5e1;
+
+      background:rgba(255,255,255,.045);
+
+      font-size:12px;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 8px 25px rgba(0,0,0,.15);
+
+      backdrop-filter:blur(18px);
+
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero{
+      text-align:center;
+
+      margin-bottom:25px;
+    }
+
+    .hero .eyebrow{
+      display:inline-flex;
+
+      align-items:center;
+
+      gap:8px;
+
+      color:#fdba74;
+
+      background:rgba(249,115,22,.07);
+
+      border:1px solid rgba(249,115,22,.20);
+
+      border-radius:999px;
+
+      padding:8px 13px;
+
+      font-size:12px;
+
+      font-weight:700;
+
+      margin-bottom:14px;
+
+      backdrop-filter:blur(15px);
+
+      -webkit-backdrop-filter:blur(15px);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 8px 30px rgba(0,0,0,.12);
+    }
+
+    .dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:#fb923c;
+
+      box-shadow:0 0 15px #f97316;
+    }
+
+    .hero h1{
+      margin:0;
+
+      font-size:clamp(30px,5vw,48px);
+
+      letter-spacing:-1px;
+
+      line-height:1.1;
+    }
+
+    .hero h1 span{
+      background:
+        linear-gradient(
+          90deg,
+          #93c5fd,
+          #fff,
+          #67e8f9
+        );
+
+      -webkit-background-clip:text;
+
+      background-clip:text;
+
+      color:transparent;
+
+      -webkit-text-fill-color:transparent;
+    }
+
+    .hero p{
+      color:var(--muted);
+
+      font-size:13px;
+
+      margin:9px 0 0;
+
+      line-height:1.8;
+    }
+
+    /* =========================
+       GRID
+    ========================= */
+
+    .grid{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:12px;
+    }
+
+    /* =========================
+       GLASS BOX
+    ========================= */
+
+    .box{
+      position:relative;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(30,41,59,.42),
+          rgba(15,23,42,.24)
+        );
+
+      border:1px solid rgba(255,255,255,.12);
+
+      border-radius:20px;
+
+      padding:17px;
+
+      box-shadow:
+        0 25px 70px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.08),
+        inset 0 -1px 0 rgba(255,255,255,.025);
+
+      backdrop-filter:blur(24px) saturate(135%);
+
+      -webkit-backdrop-filter:blur(24px) saturate(135%);
+
+      overflow:hidden;
+    }
+
+    .box::before{
+      content:"";
+
+      position:absolute;
+
+      width:220px;
+      height:220px;
+
+      top:-110px;
+      right:-80px;
+
+      border-radius:50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(59,130,246,.16),
+          transparent 70%
+        );
+
+      filter:blur(20px);
+
+      pointer-events:none;
+    }
+
+    .box::after{
+      content:"";
+
+      position:absolute;
+
+      inset:0;
+
+      border-radius:inherit;
+
+      background:
+        linear-gradient(
+          120deg,
+          rgba(255,255,255,.055),
+          transparent 35%,
+          transparent 70%,
+          rgba(255,255,255,.025)
+        );
+
+      pointer-events:none;
+    }
+
+    .box label{
+      display:block;
+
+      font-weight:800;
+
+      margin-bottom:8px;
+
+      font-size:13px;
+
+      color:#dbeafe;
+
+      position:relative;
+
+      z-index:2;
+    }
+
+    /* =========================
+       TEXTAREAS
+    ========================= */
+
+    textarea,
+    input{
+      width:100%;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(2,6,23,.42),
+          rgba(15,23,42,.28)
+        );
+
+      color:#f8fafc;
+
+      border:1px solid rgba(255,255,255,.11);
+
+      border-radius:14px;
+
+      padding:13px;
+
+      outline:none;
+
+      font-family:Consolas,Tahoma,monospace;
+
+      font-size:14px;
+
+      transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+
+      position:relative;
+
+      z-index:2;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.045),
+        inset 0 -1px 0 rgba(0,0,0,.15);
+    }
+
+    textarea{
+      height:380px;
+
+      min-height:155px;
+
+      resize:none;
+
+      line-height:1.8;
+
+      direction:ltr;
+
+      text-align:left;
+    }
+
+    textarea::placeholder,
+    input::placeholder{
+      color:#64748b;
+    }
+
+    textarea:focus,
+    input:focus{
+      border-color:rgba(96,165,250,.55);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(2,6,23,.52),
+          rgba(15,23,42,.34)
+        );
+
+      box-shadow:
+        0 0 0 3px rgba(59,130,246,.08),
+        0 20px 45px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    /* =========================
+       AUTHOR / REPORT
+    ========================= */
+
+    .full-width-box{
+      margin-top:12px;
+    }
+
+    .full-width-box textarea{
+      height:220px;
+    }
+
+    .input-author{
+      position:relative;
+
+      z-index:2;
+
+      margin-bottom:12px;
+
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+    }
+
+    .input-author label{
+      margin:0!important;
+
+      min-width:145px;
+
+      color:#cbd5e1!important;
+    }
+
+    .input-author input{
+      height:47px;
+
+      flex:1;
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+
+    .stats-bar{
+      position:relative;
+
+      z-index:2;
+
+      margin-top:10px;
+
+      padding:12px 14px;
+
+      border-radius:12px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.055),
+          rgba(255,255,255,.025)
+        );
+
+      border:1px solid rgba(255,255,255,.10);
+
+      font-size:12px;
+
+      line-height:2;
+
+      display:flex;
+
+      flex-direction:column;
+
+      gap:2px;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05);
+      
+      backdrop-filter:blur(15px);
+
+      -webkit-backdrop-filter:blur(15px);
+    }
+
+    .stats-count{
+      color:#93c5fd;
+
+      font-weight:bold;
+    }
+
+    .stats-duplicates{
+      color:#f87171;
+
+      font-weight:bold;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .actions{
+      display:flex;
+
+      gap:8px;
+
+      flex-wrap:wrap;
+
+      margin-top:12px;
+
+      justify-content:center;
+    }
+
+    button.action-btn{
+      border:1px solid rgba(255,255,255,.12);
+
+      border-radius:11px;
+
+      padding:10px 15px;
+
+      font-weight:700;
+
+      cursor:pointer;
+
+      color:white;
+
+      transition:
+        transform .22s cubic-bezier(.2,.8,.2,1),
+        filter .22s ease,
+        box-shadow .22s ease,
+        background .22s ease;
+
+      font-family:Tahoma,Arial,sans-serif;
+
+      position:relative;
+
+      overflow:hidden;
+
+      isolation:isolate;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(16,185,129,.82),
+          rgba(5,150,105,.65)
+        );
+
+      --glow:#10b981;
+
+      backdrop-filter:blur(16px);
+
+      -webkit-backdrop-filter:blur(16px);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 10px 30px rgba(0,0,0,.18);
+    }
+
+    button.action-btn:hover{
+      transform:translateY(-2px) scale(1.015);
+
+      filter:brightness(1.1);
+
+      box-shadow:
+        0 0 16px var(--glow),
+        0 0 30px var(--glow),
+        0 10px 32px rgba(0,0,0,.28);
+    }
+
+    button.action-btn:active{
+      transform:translateY(0) scale(.97);
+    }
+
+    button.action-btn::after{
+      content:"";
+
+      position:absolute;
+
+      width:18px;
+      height:18px;
+
+      left:var(--ripple-x,50%);
+
+      top:var(--ripple-y,50%);
+
+      transform:
+        translate(-50%,-50%)
+        scale(0);
+
+      border-radius:50%;
+
+      background:rgba(255,255,255,.32);
+
+      pointer-events:none;
+
+      z-index:-1;
+    }
+
+    button.action-btn.ripple::after{
+      animation:buttonRipple .55s ease-out;
+    }
+
+    @keyframes buttonRipple{
+
+      0%{
+        transform:
+          translate(-50%,-50%)
+          scale(0);
+
+        opacity:.7;
+      }
+
+      100%{
+        transform:
+          translate(-50%,-50%)
+          scale(16);
+
+        opacity:0;
+      }
+
+    }
+
+    button.secondary{
+      color:white;
+
+      border:1px solid rgba(255,255,255,.12);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.10),
+        0 10px 30px rgba(0,0,0,.16);
+    }
+
+    button.secondary:hover{
+      border-color:rgba(255,255,255,.16);
+    }
+
+    /* نسخ الجرد */
+    button.copy-inventory{
+      --glow:#3b82f6;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(59,130,246,.82),
+          rgba(37,99,235,.65)
+        );
+    }
+
+    /* نسخ التقرير الأسبوعي */
+    button.copy-report{
+      --glow:#06b6d4;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(6,182,212,.82),
+          rgba(8,145,178,.65)
+        );
+    }
+
+    /* مسح الكل */
+    button.clear-all{
+      --glow:#ef4444;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(239,68,68,.82),
+          rgba(220,38,38,.65)
+        );
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast{
+      position:fixed;
+
+      bottom:25px;
+
+      left:50%;
+
+      transform:
+        translateX(-50%)
+        translateY(100px);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(17,27,48,.65),
+          rgba(8,15,29,.48)
+        );
+
+      border:1px solid rgba(16,185,129,.30);
+
+      color:#d1fae5;
+
+      padding:11px 20px;
+
+      border-radius:11px;
+
+      font-size:.88rem;
+
+      opacity:0;
+
+      box-shadow:
+        0 15px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.07);
+
+      transition:all .3s ease;
+
+      z-index:20;
+
+      backdrop-filter:blur(22px);
+
+      -webkit-backdrop-filter:blur(22px);
+    }
+
+    .toast.show{
+      transform:
+        translateX(-50%)
+        translateY(0);
+
+      opacity:1;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer{
+      margin-top:28px;
+
+      text-align:center;
+
+      color:#64748b;
+
+      font-size:11px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width:850px){
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:600px){
+
+      .wrapper{
+        width:min(100% - 24px,620px);
+
+        padding-top:20px;
+      }
+
+      .topbar{
+        margin-bottom:20px;
+      }
+
+      .badge{
+        display:none;
+      }
+
+      .hero h1{
+        font-size:30px;
+      }
+
+      .box{
+        padding:13px;
+
+        border-radius:17px;
+      }
+
+      .actions{
+        flex-direction:column;
+      }
+
+      button.action-btn{
+        width:100%;
+      }
+
+      .input-author{
+        flex-direction:column;
+
+        align-items:stretch;
+      }
+
+      .input-author label{
+        min-width:0;
+      }
+
+      textarea{
+        height:330px;
+      }
+
+      .full-width-box textarea{
+        height:220px;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="wrapper">
+
+    <div class="topbar">
+
+      <div class="brand">
+
+        <div class="brand-icon">
+          🎤
+        </div>
+
+        <div>
+          <b>نظام جرد الانترفيو</b>
+          <span>أداة معالجة وجرد تقارير قسم الانترفيو</span>
+        </div>
+
+      </div>
+
+      <div class="badge">
+        ● النظام جاهز للعمل
+      </div>
+
+    </div>
+
+    <header class="hero">
+
+      <div class="eyebrow">
+        <span class="dot"></span>
+        معالجة تقارير الانترفيو
+      </div>
+
+      <h1>
+        جرد <span>قسم الانترفيو</span>
+      </h1>
+
+      <p>
+        الصق استبيانات قسم الانترفيو وسيتم تنظيمها ومعالجتها وإخراج النتيجة والتقرير الأسبوعي بشكل جاهز للنسخ.
+      </p>
+
+    </header>
+
+    <div class="grid">
+
+      <div class="box">
+
+        <label>
+          المدخلات — استبيانات الانترفيو
+        </label>
+
+        <textarea
+          id="inputData"
+          placeholder="الصق استبيانات قسم الانترفيو هنا..."
+        ></textarea>
+
+      </div>
+
+      <div class="box">
+
+        <label>
+          المخرجات — نتيجة الجرد المنسقة
+        </label>
+
+        <textarea
+          id="outputData"
+          placeholder="ستظهر النتيجة هنا..."
+          readonly
+        ></textarea>
+
+        <div class="stats-bar">
+
+          <div
+            id="totalCount"
+            class="stats-count"
+          >
+            إجمالي العدد: 0
+          </div>
+
+          <div
+            id="duplicateAlert"
+            class="stats-duplicates"
+            style="display:none;"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="box full-width-box">
+
+      <div class="input-author">
+
+        <label>
+          منشئ التقرير (اسمك/المنشن):
+        </label>
+
+        <input
+          type="text"
+          id="authorName"
+          placeholder="أدخل اسمك..."
+        >
+
+      </div>
+
+      <label>
+        نموذج التقرير الأسبوعي — جاهز للنسخ
+      </label>
+
+      <textarea
+        id="reportData"
+        readonly
+      ></textarea>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="action-btn"
+        onclick="processData()"
+      >
+        ⚡ معالجة وتحديث
+      </button>
+
+      <button
+        class="action-btn secondary copy-inventory"
+        onclick="copyResult('outputData')"
+      >
+        📋 نسخ الجرد
+      </button>
+
+      <button
+        class="action-btn secondary copy-report"
+        onclick="copyResult('reportData')"
+      >
+        📄 نسخ التقرير الأسبوعي
+      </button>
+
+      <button
+        class="action-btn secondary clear-all"
+        onclick="clearAll()"
+      >
+        🗑️ مسح الكل
+      </button>
+
+    </div>
+
+    <div class="footer">
+      نظام جرد الانترفيو • أداة معالجة وجرد تقارير قسم الانترفيو
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">
+    تم النسخ بنجاح!
+  </div>
+
+  <script>
+
+    // رول خارج الخدمة لقسم الانترفيو
+    const OUT_OF_SERVICE_ROLE_ID = "1135000855872020513";
+    const OUT_OF_SERVICE_ROLE_MENTION = `<@&${OUT_OF_SERVICE_ROLE_ID}>`;
+
+    function removeFancyFont(text) {
+
+      if (!text) return '';
+
+      let str = text.normalize('NFKD');
+      let clean = '';
+
+      for (let i = 0; i < str.length; i++) {
+
+        let code = str.charCodeAt(i);
+
+        if (code >= 0xD835) {
+
+          let codePoint = str.codePointAt(i);
+
+          if (codePoint >= 0x1D400 && codePoint <= 0x1D419)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D400));
+
+          else if (codePoint >= 0x1D41A && codePoint <= 0x1D433)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D41A));
+
+          else if (codePoint >= 0x1D434 && codePoint <= 0x1D44D)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D434));
+
+          else if (codePoint >= 0x1D44E && codePoint <= 0x1D467)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D44E));
+
+          else if (codePoint >= 0x1D468 && codePoint <= 0x1D481)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D468));
+
+          else if (codePoint >= 0x1D482 && codePoint <= 0x1D49B)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D482));
+
+          else if (codePoint >= 0x1D5D4 && codePoint <= 0x1D5ED)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D5D4));
+
+          else if (codePoint >= 0x1D5EE && codePoint <= 0x1D607)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D5EE));
+
+          else if (codePoint >= 0x1D608 && codePoint <= 0x1D621)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D608));
+
+          else if (codePoint >= 0x1D622 && codePoint <= 0x1D63B)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D622));
+
+          else if (codePoint >= 0x1D63C && codePoint <= 0x1D655)
+            clean += String.fromCharCode(65 + (codePoint - 0x1D63C));
+
+          else if (codePoint >= 0x1D656 && codePoint <= 0x1D66F)
+            clean += String.fromCharCode(97 + (codePoint - 0x1D656));
+
+          i++;
+
+        } else {
+
+          clean += str[i];
+
+        }
+      }
+
+      return clean.replace(/[\u0300-\u036f]/g, '').trim();
+    }
+
+    function cleanAndStandardizeRank(rawRank) {
+
+      if (!rawRank) return '';
+
+      let clean = removeFancyFont(rawRank);
+
+      const lowerClean =
+        clean.toLowerCase();
+
+      const standardRanks = [
+        "Supervisor",
+        "Mod",
+        "Super Admin",
+        "Head Admin",
+        "Admin",
+        "Controller",
+        "Hand of the king",
+        "Pre Master",
+        "Master",
+        "Advisor",
+        "Operator",
+        "Marshal",
+        "Manager",
+        "Director",
+        "Executive",
+        "President",
+        "Commander",
+        "Mythical",
+        "Colonel",
+        "Boss",
+        "Big Boss",
+        "CEO",
+        "Co Founder",
+        "Founder",
+        "Consultant"
+      ];
+
+      for (let rank of standardRanks) {
+
+        if (
+          lowerClean.includes(
+            rank.toLowerCase()
+          )
+        )
+          return rank;
+
+      }
+
+      return clean;
+    }
+
+    function formatUserMention(rawInput) {
+
+      if (!rawInput) return '';
+
+      const trimmed =
+        rawInput.trim();
+
+      const mentionMatch =
+        trimmed.match(
+          /^<@!?([0-9]{17,20})>$/
+        );
+
+      if (mentionMatch)
+        return `<@${mentionMatch[1]}>`;
+
+      const digitMatch =
+        trimmed.match(/\d{17,20}/);
+
+      if (digitMatch)
+        return `<@${digitMatch[0]}>`;
+
+      let clean =
+        trimmed
+          .replace(
+            /[\u200B-\u200D\uFEFF\u200F]/g,
+            ''
+          )
+          .replace(/@+/g, '')
+          .trim();
+
+      return clean
+        ? `<@${clean}>`
+        : '';
+    }
+
+    function processData() {
+
+      const input =
+        document.getElementById(
+          'inputData'
+        ).value;
+
+      const totalCountElem =
+        document.getElementById(
+          'totalCount'
+        );
+
+      const duplicateAlertElem =
+        document.getElementById(
+          'duplicateAlert'
+        );
+
+      const authorName =
+        document.getElementById(
+          'authorName'
+        ).value.trim();
+
+      if (!input.trim()) {
+
+        document.getElementById(
+          'outputData'
+        ).value = '';
+
+        document.getElementById(
+          'reportData'
+        ).value = '';
+
+        totalCountElem.textContent =
+          'إجمالي العدد: 0';
+
+        duplicateAlertElem.style.display =
+          'none';
+
+        return;
+      }
+
+      const lineSeparator =
+        '`-----------------------------------------------------`';
+
+      let result =
+        `${lineSeparator}\n`;
+
+      let processedCount = 0;
+      let idTracker = {};
+
+      let countNew = 0;
+      let countOut = 0;
+      let countBad = 0;
+      let countActive = 0;
+
+      const entries =
+        input.split(
+          /\r?\n\s*=+\s*\r?\n/g
+        );
+
+      entries.forEach((entry) => {
+
+        if (
+          !entry
+            .replace(/=/g, '')
+            .trim()
+        )
+          return;
+
+        let data = {
+          userMention: '',
+          userId: '',
+          rank: '',
+          finalEval: '',
+          rawEval: ''
+        };
+
+        const lines =
+          entry.split(/\r?\n/);
+
+        lines.forEach(line => {
+
+          if (!line.includes(':'))
+            return;
+
+          const parts =
+            line.split(':');
+
+          const key =
+            parts[0].trim();
+
+          const val =
+            parts
+              .slice(1)
+              .join(':')
+              .trim();
+
+          if (
+            key.includes(
+              'منشن الشخص'
+            )
+          )
+            data.userMention = val;
+
+          else if (
+            key.includes('الايدي')
+          )
+            data.userId = val;
+
+          else if (
+            key.includes(
+              'الرتبة الادارية'
+            ) ||
+            key.includes('الرتبة')
+          )
+            data.rank = val;
+
+          else if (
+            key.includes(
+              'التقيم النهائي'
+            ) ||
+            key.includes(
+              'التقييم النهائي'
+            )
+          )
+            data.finalEval = val;
+
+          else if (
+            key === 'التقييم' ||
+            key === 'التقيم'
+          )
+            data.rawEval = val;
+
+        });
+
+        /*
+          استخدام منشن الشخص فقط في المخرجات.
+          حقل الايدي يستخدم فقط لتتبع التكرار.
+        */
+        const sourceMention =
+          data.userMention;
+
+        if (sourceMention) {
+
+          processedCount++;
+
+          let rawKey =
+            sourceMention.replace(
+              /[^0-9]/g,
+              ''
+            );
+
+          if (
+            rawKey &&
+            rawKey.length >= 17
+          ) {
+
+            idTracker[rawKey] =
+              (
+                idTracker[rawKey] || 0
+              ) + 1;
+
+          }
+
+          const cleanRank =
+            cleanAndStandardizeRank(
+              data.rank
+            );
+
+          const finalEvalText =
+            data.finalEval || '';
+
+          const rawEvalText =
+            data.rawEval || '';
+
+          const importantEvalText =
+            `${finalEvalText} ${rawEvalText}`;
+
+          const roleMentionInFinalEval =
+            finalEvalText.match(
+              /<@&\d{17,20}>/
+            );
+
+          const hasOutKeyword =
+            /خارج الخدمة|خارج خدمة/.test(
+              importantEvalText
+            );
+
+          const hasRoleMention =
+            /<@&\d{17,20}>/.test(
+              importantEvalText
+            );
+
+          const hasConfiguredOutRole =
+            importantEvalText.includes(
+              OUT_OF_SERVICE_ROLE_ID
+            ) ||
+            importantEvalText.includes(
+              OUT_OF_SERVICE_ROLE_MENTION
+            );
+
+          const isOutOfService =
+            hasOutKeyword ||
+            hasRoleMention ||
+            hasConfiguredOutRole;
+
+          let finalRating =
+            data.finalEval ||
+            data.rawEval ||
+            'سيء';
+
+          if (
+            isOutOfService ||
+            finalRating.includes('إجازة')
+          ) {
+
+            countOut++;
+
+            finalRating =
+              roleMentionInFinalEval
+                ? roleMentionInFinalEval[0]
+                : OUT_OF_SERVICE_ROLE_MENTION;
+
+          } else if (
+            finalRating.includes('جديد')
+          ) {
+
+            countNew++;
+
+          } else if (
+            finalRating.includes('سيء') ||
+            finalRating.includes('سئ')
+          ) {
+
+            countBad++;
+
+          } else if (
+            [
+              'جيد جدا',
+              'ممتاز',
+              'ممتاز جدا'
+            ].some(
+              r =>
+                finalRating.includes(r)
+            )
+          ) {
+
+            countActive++;
+
+          }
+
+          let formattedMention =
+            formatUserMention(
+              data.userMention
+            );
+
+          result +=
+            `${formattedMention}\n` +
+            `التقييم : ${finalRating}\n` +
+            `الرتبة الادارية : ${cleanRank}\n` +
+            `${lineSeparator}\n`;
+        }
+
+      });
+
+      document.getElementById(
+        'outputData'
+      ).value = result;
+
+      totalCountElem.textContent =
+        `إجمالي العدد: ${processedCount}`;
+
+      const weeklyReport =
+        `** كم العدد حالي بالقسم: ${processedCount}\n\n` +
+        `كم عدد ماخذين اجازة : ${countOut} ( ${countNew}جديد)\n\n` +
+        `عدد غير متفاعلين : ${countBad}\n\n` +
+        `عدد المتفاعلين بالقسم : ${countActive}\n` +
+        `هل يوجد ملاحظة بالقسم او حاب تطور شي من جميع نواحي : لايوجد يعطيكم العافية   \n\n` +
+        `تم انشاء التقرير من قبل : ( ${authorName} ) **`;
+
+      document.getElementById(
+        'reportData'
+      ).value = weeklyReport;
+
+      let duplicates =
+        Object.keys(idTracker)
+          .filter(
+            key => idTracker[key] > 1
+          );
+
+      if (duplicates.length > 0) {
+
+        duplicateAlertElem.style.display =
+          'block';
+
+        duplicateAlertElem.innerHTML =
+          `⚠️ تنبيه: يوجد IDs مكررة: <br>` +
+          duplicates
+            .map(
+              d =>
+                `- ${d} (تكرر ${idTracker[d]} مرات)`
+            )
+            .join('<br>');
+
+      } else {
+
+        duplicateAlertElem.style.display =
+          'none';
+
+      }
+    }
+
+    function copyResult(elementId) {
+
+      const output =
+        document.getElementById(
+          elementId
+        );
+
+      if (!output.value)
+        return;
+
+      output.select();
+
+      navigator.clipboard.writeText(
+        output.value
+      );
+
+      showToast();
+    }
+
+    function clearAll() {
+
+      document.getElementById(
+        'inputData'
+      ).value = '';
+
+      document.getElementById(
+        'outputData'
+      ).value = '';
+
+      document.getElementById(
+        'reportData'
+      ).value = '';
+
+      document.getElementById(
+        'authorName'
+      ).value = '';
+
+      document.getElementById(
+        'totalCount'
+      ).textContent =
+        'إجمالي العدد: 0';
+
+      document.getElementById(
+        'duplicateAlert'
+      ).style.display =
+        'none';
+    }
+
+    function showToast() {
+
+      const toast =
+        document.getElementById(
+          'toast'
+        );
+
+      toast.classList.add('show');
+
+      setTimeout(
+        () =>
+          toast.classList.remove('show'),
+        2000
+      );
+    }
+
+    /* =========================================================
+       تأثير النقر
+    ========================================================= */
+
+    document.addEventListener(
+      'click',
+      function(e){
+
+        const button=
+          e.target.closest(
+            'button'
+          );
+
+        if(!button)
+          return;
+
+        const rect=
+          button.getBoundingClientRect();
+
+        button.style.setProperty(
+          '--ripple-x',
+          (
+            e.clientX-
+            rect.left
+          )+'px'
+        );
+
+        button.style.setProperty(
+          '--ripple-y',
+          (
+            e.clientY-
+            rect.top
+          )+'px'
+        );
+
+        button.classList.remove(
+          'ripple'
+        );
+
+        void button.offsetWidth;
+
+        button.classList.add(
+          'ripple'
+        );
+
+        setTimeout(
+          ()=>{
+            button.classList.remove(
+              'ripple'
+            );
+          },
+          600
+        );
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
